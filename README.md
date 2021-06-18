@@ -9,9 +9,9 @@ You need OpenCV to run this project on your local machine and it can be installe
 ## How to run
 1. Download/Clone the repo.
 2. Make sure you have OpenCV installed for Python.(I recommend installing it on top of Anaconda Distribution)
-3. Execute the **lanelinedetector.py** script
+3. Execute the **main.py** script
 ```
-python lanelinedetector.py
+python main.py
 ```
 4. Make changes accordingly to use any other video file you might want to.(You can also use a static image, I have commented the image code since video is more useful.)
 
