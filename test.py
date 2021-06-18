@@ -88,8 +88,10 @@ while response:
     bottom_top, bbox = sort_contours(contours, method="bottom-to-top")
     cnt1 = bottom_top[1]
     cnt2 = bottom_top[0]
+    cnt_top = bottom_top[-1]
     bbox1 = bbox[0]
     bbox2 = bbox[1]
+    bbox_top = bbox[-1]
     cv2.imwrite('test.png', cannyed)
 
 
@@ -97,10 +99,13 @@ while response:
     try:
         rect1 = cv2.minAreaRect(cnt1)
         rect2 = cv2.minAreaRect(cnt2)
+        rect_top = cv2.minAreaRect(cnt_top)
         box1 = cv2.boxPoints(rect1)
         box2 = cv2.boxPoints(rect2)
+        box_top = cv2.boxPoints(rect_top)
         box1 = np.int0(box1)
         box2 = np.int0(box2)
+        box_top = np.int0(box_top)
         # rows, cols = test_image_copy.shape[:2]
         # [vx1, vy1, x1, y1] = cv2.fitLine(cnt1, cv2.DIST_L2, 0, 0.01, 0.01)
         # [vx2, vy2, x2, y2] = cv2.fitLine(cnt2, cv2.DIST_L2, 0, 0.01, 0.01)
@@ -111,6 +116,8 @@ while response:
         # righty2 = int(((cols-x2)*vy2/vx2)+y2)
         cv2.drawContours(test_image_copy, [box1], 0, (0, 255, 0), 2)
         cv2.drawContours(test_image_copy, [box2], 0, (255, 0, 0), 2)
+        cv2.rectangle(test_image_copy, (box_top[0, 0], box_top[0, 1]), (box1[0, 0], box2[0, 0]), GREEN, -1)
+        #cv2.repeat(test_image_copy, box_top)
         #cv2.line(test_image_copy, (cols-1, righty2), (0, lefty2), (0, 255, 0), 2)
 
     except Exception as e:
