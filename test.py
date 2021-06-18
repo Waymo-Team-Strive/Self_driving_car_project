@@ -4,7 +4,7 @@ import numpy as np
 path = '/solidWhiteCurve.jpg'
 
 white_lower = np.array([np.round(0 / 2), np.round(0.75 * 255), np.round(0.00 * 255)])
-white_upper = np.array([np.round(360 / 2), np.round(1.00 * 255), np.round(0.30 * 255)])
+white_upper = np.array([np.round(390 / 2), np.round(1 * 255), np.round(1 * 255)])
 
 
 # Yellow-ish areas in image
@@ -49,7 +49,7 @@ def get_image(path):
     return image
 
 
-vc = cv2.VideoCapture('test_videos/solidYellowLeft.mp4')
+vc = cv2.VideoCapture('test_videos/solidWhiteRight.mp4')
 if vc.isOpened():
     response, frame = vc.read()
 
@@ -88,44 +88,50 @@ while response:
 
     cannyed = cv2.Canny(dilated, 180, 200)
 
+    lines = cv2.HoughLinesP(cannyed, rho=1, theta=1 * np.pi / 180, threshold=110, minLineLength=100, maxLineGap=160)
+
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        cv2.line(test_image_copy, (x1, y1), (x2, y2), (255, 0, 0), 3)
+
     contours, h = cv2.findContours(cannyed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    contours_sorted = sorted(contours, key=lambda cont: cv2.arcLength(cont, True), reverse=True)
-    bottom_top, bbox = sort_contours(contours, method="bottom-to-top")
-    cnt1 = bottom_top[1]
-    cnt2 = bottom_top[0]
-    cnt_top = bottom_top[-1]
-    bbox1 = bbox[0]
-    bbox2 = bbox[1]
-    bbox_top = bbox[-1]
-    cv2.imwrite('test.png', res)
+    # contours_sorted = sorted(contours, key=lambda cont: cv2.arcLength(cont, True), reverse=True)
+    # bottom_top, bbox = sort_contours(contours, method="bottom-to-top")
+    # cnt1 = bottom_top[1]
+    # cnt2 = bottom_top[0]
+    # cnt_top = bottom_top[-1]
+    # bbox1 = bbox[0]
+    # bbox2 = bbox[1]
+    # bbox_top = bbox[-1]
+    cv2.imwrite('test.png', cannyed)
 
-    try:
-        rect1 = cv2.minAreaRect(cnt1)
-        rect2 = cv2.minAreaRect(cnt2)
-        rect_top = cv2.minAreaRect(cnt_top)
-        box1 = cv2.boxPoints(rect1)
-        box2 = cv2.boxPoints(rect2)
-        box_top = cv2.boxPoints(rect_top)
-        box1 = np.int0(box1)
-        box2 = np.int0(box2)
-        box_top = np.int0(box_top)
-        # rows, cols = test_image_copy.shape[:2]
-        # [vx1, vy1, x1, y1] = cv2.fitLine(cnt1, cv2.DIST_L2, 0, 0.01, 0.01)
-        # [vx2, vy2, x2, y2] = cv2.fitLine(cnt2, cv2.DIST_L2, 0, 0.01, 0.01)
-        # lefty1 = int((-x1*vy1/vx1) + y1)
-        # righty1 = int(((cols-x1)*vy1/vx1)+y1)
-        #
-        # lefty2 = int((-x2*vy2/vx2) + y2)
-        # righty2 = int(((cols-x2)*vy2/vx2)+y2)
-        cv2.drawContours(test_image_copy, [box1], 0, (0, 255, 0), 2)
-        cv2.drawContours(test_image_copy, [box2], 0, (255, 0, 0), 2)
-        cv2.rectangle(test_image_copy, (box_top[0, 0], box_top[0, 1]), (box1[0, 0], box2[0, 0]), GREEN, -1)
-        # cv2.repeat(test_image_copy, box_top)
-        # cv2.line(test_image_copy, (cols-1, righty2), (0, lefty2), (0, 255, 0), 2)
-
-    except Exception as e:
-        continue
+    # try:
+    #     rect1 = cv2.minAreaRect(cnt1)
+    #     rect2 = cv2.minAreaRect(cnt2)
+    #     rect_top = cv2.minAreaRect(cnt_top)
+    #     box1 = cv2.boxPoints(rect1)
+    #     box2 = cv2.boxPoints(rect2)
+    #     box_top = cv2.boxPoints(rect_top)
+    #     box1 = np.int0(box1)
+    #     box2 = np.int0(box2)
+    #     box_top = np.int0(box_top)
+    #     # rows, cols = test_image_copy.shape[:2]
+    #     # [vx1, vy1, x1, y1] = cv2.fitLine(cnt1, cv2.DIST_L2, 0, 0.01, 0.01)
+    #     # [vx2, vy2, x2, y2] = cv2.fitLine(cnt2, cv2.DIST_L2, 0, 0.01, 0.01)
+    #     # lefty1 = int((-x1*vy1/vx1) + y1)
+    #     # righty1 = int(((cols-x1)*vy1/vx1)+y1)
+    #     #
+    #     # lefty2 = int((-x2*vy2/vx2) + y2)
+    #     # righty2 = int(((cols-x2)*vy2/vx2)+y2)
+    #     cv2.drawContours(test_image_copy, [box1], 0, (0, 255, 0), 2)
+    #     cv2.drawContours(test_image_copy, [box2], 0, (255, 0, 0), 2)
+    #     cv2.rectangle(test_image_copy, (box_top[0, 0], box_top[0, 1]), (box1[0, 0], box2[0, 0]), GREEN, -1)
+    #     # cv2.repeat(test_image_copy, box_top)
+    #     # cv2.line(test_image_copy, (cols-1, righty2), (0, lefty2), (0, 255, 0), 2)
+    #
+    # except Exception as e:
+    #     continue
     # epsilon = 0.1*cv2.arcLength(cnt, True)
     # approx = cv2.approxPolyDP(cnt, epsilon, True)
 
