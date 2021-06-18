@@ -50,13 +50,13 @@ contours_sorted = sorted(contours, key=cv2.contourArea, reverse=True)
 
 contours_drawn = cv2.drawContours(cropped_colour, contours_sorted[:8], -1, GREEN, 2, cv2.LINE_8)
 
-print(contours_sorted[0][:,0,1].shape)
+# print(contours_sorted[0][:,0,1].shape)
 
-rows,cols = (69,69)
-[vx,vy,x,y] = cv2.fitLine(contours_sorted[0], cv2.DIST_L2,0,0.01,0.01)
-lefty = int((-x*vy/vx) + y)
-righty = int(((cols-x)*vy/vx)+y)
-test = cv2.line(contours_sorted[0],(cols-1,righty),(0,lefty),(0,255,0),2)
+# rows,cols = (69,69)
+# [vx,vy,x,y] = cv2.fitLine(contours_sorted[0], cv2.DIST_L2,0,0.01,0.01)
+# lefty = int((-x*vy/vx) + y)
+# righty = int(((cols-x)*vy/vx)+y)
+# test = cv2.line(contours_sorted[0],(cols-1,righty),(0,lefty),(0,255,0),2)
 
 # lines = cv2.HoughLines(cannyed, 1, np.pi/180, cannyed.shape[0]-1)
 #
@@ -74,7 +74,7 @@ test = cv2.line(contours_sorted[0],(cols-1,righty),(0,lefty),(0,255,0),2)
 #         cv2.line(test_image_copy, (x1, y1+height), (x2, y2+height), GREEN, 2)
 
 
-cv2.imshow('test', test)
+cv2.imshow('test', contours_drawn)
 cv2.waitKey()
 cv2.destroyAllWindows()
 
