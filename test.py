@@ -2,8 +2,6 @@ import cv2
 import numpy as np
 
 path = '/solidWhiteCurve.jpg'
-
-GREEN = (0, 255, 0)
 kernel = np.ones((3, 3), np.uint8)
 
 def get_image(path):
@@ -13,7 +11,7 @@ def get_image(path):
 
 
 def frame_process(test_image):
-    #test_image = get_image(path)
+    GREEN = (0, 255, 0)
 
     test_image_copy = test_image.copy()
 
@@ -44,14 +42,6 @@ def frame_process(test_image):
 
     return test_image_copy
 
-#image = frame_process(path)
-
-
-# cv2.imshow('test', image)
-# cv2.waitKey()
-# cv2.destroyAllWindows()
-
-# WORKS
 
 cap = cv2.VideoCapture('test_videos/solidWhiteRight.mp4')
 count = 0
