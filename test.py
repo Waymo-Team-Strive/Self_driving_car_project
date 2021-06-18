@@ -3,7 +3,7 @@ import numpy as np
 
 path = '/solidWhiteCurve.jpg'
 
-white_lower = np.array([np.round(0 / 2), np.round(0.75 * 255), np.round(0.00 * 255)])
+white_lower = np.array([np.round(0 / 2), np.round(0.9 * 255), np.round(0.00 * 255)])
 white_upper = np.array([np.round(390 / 2), np.round(1 * 255), np.round(1 * 255)])
 
 
@@ -88,7 +88,7 @@ while response:
 
     cannyed = cv2.Canny(dilated, 180, 200)
 
-    lines = cv2.HoughLinesP(cannyed, rho=1, theta=1 * np.pi / 180, threshold=110, minLineLength=100, maxLineGap=160)
+    lines = cv2.HoughLinesP(cannyed, rho=3, theta=1 * np.pi / 180, threshold=110, minLineLength=30, maxLineGap=500)
 
     for line in lines:
         x1, y1, x2, y2 = line[0]
