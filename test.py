@@ -3,8 +3,17 @@ import numpy as np
 
 path = '/solidWhiteCurve.jpg'
 
-lower_white = np.array([0, 0, 0])
-upper_white = np.array([180, 0, 0])
+white_lower = np.array([np.round(0 / 2), np.round(0.75 * 255), np.round(0.00 * 255)])
+white_upper = np.array([np.round(360 / 2), np.round(1.00 * 255), np.round(0.30 * 255)])
+
+
+# Yellow-ish areas in image
+# H value must be appropriate (see HSL color space), e.g. within [40 ... 60]
+# L value can be arbitrary (we want everything between bright and dark yellow), e.g. within [0.0 ... 1.0]
+# S value must be above some threshold (we want at least some saturation), e.g. within [0.35 ... 1.0]
+yellow_lower = np.array([np.round(40 / 2), np.round(0.00 * 255), np.round(0.35 * 255)])
+yellow_upper = np.array([np.round(60 / 2), np.round(1.00 * 255), np.round(1.00 * 255)])
+
 
 GREEN = (0, 255, 0)
 
@@ -40,7 +49,7 @@ def get_image(path):
     return image
 
 
-vc = cv2.VideoCapture('test_videos/solidWhiteRight.mp4')
+vc = cv2.VideoCapture('test_videos/solidYellowLeft.mp4')
 if vc.isOpened():
     response, frame = vc.read()
 
@@ -50,15 +59,16 @@ else:
 while response:
 
     response, frame = vc.read()
-#test_image = get_image(path)
+
     if response:
         test_image_copy = frame.copy()
     else:
         break
 
     hls = cv2.cvtColor(frame, cv2.COLOR_BGR2HLS)
-    Lchannel = hls[:, :, 1]
-    mask = cv2.inRange(Lchannel, 230, 255)
+    white_mask = cv2.inRange(hls, white_lower, white_upper)
+    yellow_mask = cv2.inRange(hls, yellow_lower, yellow_upper)
+    mask = cv2.bitwise_or(yellow_mask, white_mask)
     res = cv2.bitwise_and(hls, test_image_copy, mask=mask)
 
     blurred = cv2.GaussianBlur(res, (3, 3), 1)
@@ -70,11 +80,7 @@ while response:
 
     inv_gray_image = ~gray_image
 
-    #cropped = inv_gray_image[height:, :]
-    #cropped_colour = test_image_copy[height:, :]
-
     thresh_hold_image = cv2.adaptiveThreshold(inv_gray_image, 230, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 7, 10)
-
 
     closed = cv2.morphologyEx(thresh_hold_image, cv2.MORPH_OPEN, kernel)
 
@@ -92,10 +98,8 @@ while response:
     bbox1 = bbox[0]
     bbox2 = bbox[1]
     bbox_top = bbox[-1]
-    cv2.imwrite('test.png', cannyed)
+    cv2.imwrite('test.png', res)
 
-
-    #contours_drawn = cv2.drawContours(cropped_colour, contours_sorted[:10], -1, GREEN, 2, cv2.LINE_8)
     try:
         rect1 = cv2.minAreaRect(cnt1)
         rect2 = cv2.minAreaRect(cnt2)
@@ -117,8 +121,8 @@ while response:
         cv2.drawContours(test_image_copy, [box1], 0, (0, 255, 0), 2)
         cv2.drawContours(test_image_copy, [box2], 0, (255, 0, 0), 2)
         cv2.rectangle(test_image_copy, (box_top[0, 0], box_top[0, 1]), (box1[0, 0], box2[0, 0]), GREEN, -1)
-        #cv2.repeat(test_image_copy, box_top)
-        #cv2.line(test_image_copy, (cols-1, righty2), (0, lefty2), (0, 255, 0), 2)
+        # cv2.repeat(test_image_copy, box_top)
+        # cv2.line(test_image_copy, (cols-1, righty2), (0, lefty2), (0, 255, 0), 2)
 
     except Exception as e:
         continue
